@@ -28,12 +28,16 @@ RUN apk add --update -t build-deps build-base git zlib-dev openssl-dev \
  && rm -rf /usr/src/*
 
 # Mirror Websites
-ENV SITES https://5pi.de
+ENV SITES http://elpissite.weebly.com
 RUN mkdir -p /content/www \
  && cd /content/www \
  && httrack $SITES \
  && find . -type f -maxdepth 1 -delete \
  && rm -rf hts-cache
+
+#Add CSS to html files to hide the footer
+RUN cd /content/www/elpissite.weebly.com \
+ && for f in *.html; do awk '!found && /<\/body>/{print "<style type=\"text/css\"> .footer-wrap.container{ display: none; } </style>";found=1}1' $f > tmp && mv tmp $f; done
 
 ### CAUTION: CHANGES ABOVE THIS LINE WILL BUST THE CACHE ###
 
