@@ -1,5 +1,3 @@
 #!/bin/execlineb -P
 fdmove -c 2 1
-/kiwix/bin/kiwix-serve \
-  --library /content/kiwix/library \
-  --index   /content/kiwix/index
+/usr/bin/kiwix-serve --port 8080 --library /content/kiwix/library.xml --index /content/kiwix/index
