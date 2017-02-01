@@ -31,7 +31,7 @@ RUN apk add --update -t build-deps build-base git zlib-dev openssl-dev \
 ENV SITES http://elpissite.weebly.com
 RUN mkdir -p /content/www \
  && cd /content/www \
- && httrack $SITES \
+ && httrack --ext-depth=1 $SITES \
  && find . -type f -maxdepth 1 -delete \
  && rm -rf hts-cache
 
