@@ -33,10 +33,8 @@ RUN mkdir -p /content/www \
  && cd /content/www \
  && httrack --ext-depth=1 $SITES \
  && find . -type f -maxdepth 1 -delete \
- && rm -rf hts-cache
-
-#Add CSS to html files to hide the footer
-RUN cd /content/www/elpissite.weebly.com \
+ && rm -rf hts-cache \
+ && cd /content/www/elpissite.weebly.com \
  && for f in *.html; do sed -i 's/class=\"footer-wrap\".*/class=\"footer-wrap\" style=\"display:none;\" \/>/' $f; done
 
 ### CAUTION: CHANGES ABOVE THIS LINE WILL BUST THE CACHE ###
