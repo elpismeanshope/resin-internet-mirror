@@ -56,8 +56,10 @@ RUN mkdir -p /content/www \
  && for f in *.css; do sed -i 's/@import url(\x27http:\/\/fast.fonts.net\/t\/1.css?apiType=css&amp;projectid=b9a63dc3-765c-484e-bafe-ef372307f1b7?1485949767\x27);//' $f; done
  && for f in *.css; do sed -i 's/http:\/\/elpissite.weebly.com\/files\/theme\/fonts/..\/elpissite.weebly.com\/files\/theme\/fonts/' $f; done 
  && cd ../../fonts.googleapis.com
- && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done 
-
+ && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done
+ && cd ../cdn2.editmysite.com/js/site
+ && for f in *.js; do sed -i 's/http:\/\/elpissite.weebly.com\/files\/theme\/fonts/..\/elpissite.weebly.com\/files\/theme\/fonts/' $f; done
+ 
 
 RUN apk add --update hostapd dnsmasq s6 nginx openssh py-pip python \
  && sed -i 's/#PermitRootLogin.*/PermitRootLogin\ yes/' \
