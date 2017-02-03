@@ -1,0 +1,3 @@
+#!/bin/sh
+exec 2>&1
+HOME=/data/kalite s6-setuidgid kalite /usr/bin/kalite start --foreground

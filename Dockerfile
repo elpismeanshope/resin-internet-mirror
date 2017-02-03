@@ -49,18 +49,31 @@ RUN mkdir -p /content/www \
  && find . -type f -maxdepth 1 -delete \
  && rm -rf hts-cache \
  && cd /content/www/elpissite.weebly.com \
- && for f in *.html; do sed -i 's/class=\"footer-wrap\".*/class=\"footer-wrap\" style=\"display:none;\" \/>/' $f; done
+ && for f in *.html; do sed -i 's/class=\"footer-wrap\".*/class=\"footer-wrap\" style=\"display:none;\" \/>/' $f; done \
+ && for f in *.html; do sed -i 's/class=\"wsite-section-elements\".*/class=\"footer-wrap\" style=\"visibility:visible;\" \/>/' $f; done \
+ && for f in *.html; do sed -i 's/scpt.parentNode.insertBefore(elem, scpt);//' $f; done \
+ && for f in *.html; do sed -i 's/s.parentNode.insertBefore(ga, s);//' $f; done \
+ && cd files \
+ && for f in *.css; do sed -i 's/@import url(\x27http:\/\/fast.fonts.net\/t\/1.css?apiType=css&amp;projectid=b9a63dc3-765c-484e-bafe-ef372307f1b7?1485949767\x27);//' $f; done \
+ && for f in *.css; do sed -i 's/http:\/\/elpissite.weebly.com\/files\/theme\/fonts/..\/elpissite.weebly.com\/files\/theme\/fonts/' $f; done \
+ && cd ../../fonts.googleapis.com \
+ && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done 
 
-### CAUTION: CHANGES ABOVE THIS LINE WILL BUST THE CACHE ###
 
-RUN apk add --update hostapd dnsmasq s6 nginx openssh \
+
+RUN apk add --update hostapd dnsmasq s6 nginx openssh py-pip python \
  && sed -i 's/#PermitRootLogin.*/PermitRootLogin\ yes/' \
-      /etc/ssh/sshd_config
+      /etc/ssh/sshd_config \
+ && pip install ka-lite \
+ && mkdir -p /data \
+ && adduser -h /data/kalite kalite -D \
+ && su -c 'kalite manage initialize_kalite' kalite
+
+VOLUME [ "/data" ]
 
 COPY files /
 
-VOLUME [ "/data" ]
-EXPOSE 80
+EXPOSE 80 8080 8008
 
 
 ENTRYPOINT [ "/run.sh" ]

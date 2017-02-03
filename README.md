@@ -13,7 +13,11 @@ The main webserver is running on port 80, serving the following:
 - /kiwix serves raw kiwix index and library
 - / redirects to /www/elpissite.weebly.com/
 
-The kiwix webserver is running on port 8080, serving zim files.
+
+Other services:
+
+- kiwix webserver on port 8080, serving zim files like wikipedia
+- ka-lite on port 8008
 
 Zim files can be added by editing `ZIMS`, sites by editing `SITES` in
 [Dockerfile.template](Dockerfile.template).
@@ -22,6 +26,15 @@ For a list of available ZIM files, see [the kiwix
 wiki](http://wiki.kiwix.org/wiki/Content_in_all_languages). Use the filename
 from the "Non-indexed ZIM" URLs.
 
+
+## Configuration
+To set the ka-lite admin account (username = admin), the following environment
+variables need to be set:
+
+- KA\_EMAIL
+- KA\_PASSWORD
+
+Without these, ka-lite will ask to create a admin account when first started.
 
 ## Development
 

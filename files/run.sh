@@ -24,5 +24,10 @@ fi
 # Logfiles
 mkdir -p /data/log
 
+# Configure ka-lite
+if [[ -n "${KA_PASSWORD:-}" && -n "${KA_EMAIL:-}" ]]; then
+  KA_USER=admin su -c 'kalite shell' kalite < /opt/ka-lite-password
+fi
+
 # Exec s6
 exec s6-svscan /etc/service
