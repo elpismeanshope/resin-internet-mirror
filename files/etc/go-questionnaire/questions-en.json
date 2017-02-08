@@ -1,0 +1,15 @@
+{
+    "questions": [
+        {
+            "type": "textBoxQuestion",
+            "question": "What is your name?",
+            "maxChars": 100,
+            "name": "name"
+        },
+        {
+            "type": "numberTextBoxQuestion",
+            "question": "What is your age?",
+            "name": "age"
+        }
+    ]
+}
