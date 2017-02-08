@@ -62,12 +62,11 @@ RUN mkdir -p /content/www \
 
 
 RUN apk add --update hostapd dnsmasq s6 nginx openssh py-pip python \
+      usb-modeswitch \
  && sed -i 's/#PermitRootLogin.*/PermitRootLogin\ yes/' \
       /etc/ssh/sshd_config \
  && pip install ka-lite \
- && mkdir -p /data \
- && adduser -h /data/kalite kalite -D \
- && su -c 'kalite manage initialize_kalite' kalite
+ && adduser -h /data/kalite kalite -D
 
 VOLUME [ "/data" ]
 
