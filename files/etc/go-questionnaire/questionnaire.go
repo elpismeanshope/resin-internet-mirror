@@ -6,6 +6,8 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/bluele/gforms"
 )
@@ -16,41 +18,10 @@ func check(e error) {
 	}
 }
 
-type question interface {
-	RenderQuestion() string
-}
-
-type multipleQuestion struct {
-	question string
-	choices  []string
-	isRadio  bool
-}
-
-type textBoxQuestion struct {
-	question  string
-	charLimit int
-}
-
-type numberTextBoxQuestion struct {
-	question string
-}
-
-func (q multipleQuestion) RenderQuestion() string {
-	return "Multiple question."
-}
-
-func (q textBoxQuestion) RenderQuestion() string {
-	return "Text Box question."
-}
-
-func (q numberTextBoxQuestion) RenderQuestion() string {
-	return "Number Text Box question."
-}
-
-type questionnaire struct {
-	Questions []question
-	Message   string
-}
+// type questionnaire struct {
+// 	Questions []question
+// 	Message   string
+// }
 
 //StringToHTML takes a string and returns HTML
 func StringToHTML(s string) template.HTML {
@@ -120,11 +91,21 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//parse the form fields
-	for k, v := range form.Data {
-		fmt.Println(string(k))
-		fmt.Println(fmt.Sprintf("%v", v.Value))
-	}
+	//dump the question answers into a json
+	fmt.Println(form.CleanedData)
+	jsonString, err := json.Marshal(form.CleanedData)
+	check(err)
+
+	f, err := os.Create("questionnaire-answers/" + time.Now().Format(time.RFC850) + ".json")
+	defer f.Close()
+	check(err)
+	f.WriteString([]byte(jsonString))
+
+	// for k, v := range form.CleanedData {
+	// os.Create("questionnaire-answers/" + time.Now().Format(time.RFC850) + ".json")
+	// 	fmt.Println(string(k))
+	// 	fmt.Println(fmt.Sprintf("%v", v))
+	// }
 }
 
 func main() {
