@@ -3,13 +3,35 @@
         {
             "type": "textBoxQuestion",
             "question": "What is your name?",
-            "maxChars": 100,
-            "name": "name"
+            "maxLength": 100,
+            "name": "name",
+            "required": true
         },
         {
-            "type": "numberTextBoxQuestion",
+            "type": "numberQuestion",
             "question": "What is your age?",
-            "name": "age"
+            "name": "age",
+            "required": true
+        },
+        {
+            "type": "multipleChoiceQuestion",
+            "question": "What fruits do you like?",
+            "choices": [
+                "Apples",
+                "Pears",
+                "Tomatoes"
+            ],
+            "required": false,
+            "name": "fruits"
+        },
+        {
+            "type": "singleChoiceQuestion",
+            "question": "What is your gender?",
+            "choices": [
+                "Male",
+                "Female"
+            ],
+            "required": true
         }
     ]
 }
