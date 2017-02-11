@@ -1,9 +1,12 @@
 <html>
 <head>
 <title>Elpis feedback form</title>
+<link rel="shortcut icon" href="#" />
+<a href="/en">En</a>
+<a href="/ar">Arabic</a>
 </head>
 <body>
-    <form method="post" action="/">
+    <form method="post">
     {{range $i, $field := .Fields}}
       <label>{{$field.GetName}}: </label>{{$field.Html | stringToHTML}}
       {{range $ei, $err := $field.Errors}}<label class="error">{{$err}}</label>{{end}}<br />
