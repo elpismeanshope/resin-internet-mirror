@@ -26,7 +26,7 @@ func StringToHTML(s string) template.HTML {
 
 //given a question q, will define its validators from given fields
 func defineValidators(q map[string]interface{}, locale string) gforms.Validators {
-	dat, err := ioutil.ReadFile("errorMessages.json")
+	dat, err := ioutil.ReadFile("messages.json")
 	check(err)
 	var errors map[string]interface{}
 	err = json.Unmarshal(dat, &errors)
@@ -45,7 +45,7 @@ func defineValidators(q map[string]interface{}, locale string) gforms.Validators
 	return gforms.Validators(validators)
 }
 
-//given an input string 'locale' returns a valid locale
+//given an input string 'locale' returns a valid locale (english by default)
 func getLocale(locale string) string {
 	validLocales := [...]string{"en", "ar"}
 
@@ -57,21 +57,11 @@ func getLocale(locale string) string {
 	return "en"
 }
 
-func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	locale := strings.SplitAfterN(r.URL.Path, "/", 2)[1]
-	locale = getLocale(locale)
-
-	//load the json file with questions and create fields list
-	dat, err := ioutil.ReadFile("questions.json")
-	check(err)
-	var questions map[string]interface{}
-	err = json.Unmarshal(dat, &questions)
-	check(err)
-
+//given a map of questions, return a fields list (gforms.Field)
+func getFields(questions []interface{}, locale string) []gforms.Field {
 	var fields []gforms.Field
 
-	for _, question := range questions[locale].([]interface{}) {
+	for _, question := range questions {
 		q := question.(map[string]interface{})
 		switch q["type"].(string) {
 		case "textBoxQuestion":
@@ -90,6 +80,7 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 				gforms.CheckboxMultipleWidget(
 					map[string]string{
 						"class": q["name"].(string),
+						"id":    q["name"].(string),
 					},
 					func() gforms.CheckboxOptions {
 						var retval [][]string
@@ -107,6 +98,7 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 				gforms.RadioSelectWidget(
 					map[string]string{
 						"class": q["name"].(string),
+						"id":    q["name"].(string),
 					},
 					func() gforms.RadioOptions {
 						var retval [][]string
@@ -120,27 +112,56 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 			))
 		}
 	}
+	return fields
+}
 
-	//prepare the template
-	funcMap := template.FuncMap{
-		"stringToHTML": StringToHTML,
-	}
-	t := template.Must(template.New("questionnaire.html").Funcs(funcMap).ParseFiles("questionnaire.html"))
+func getThankYouMessage(locale string) thankYouMessage {
+	dat, err := ioutil.ReadFile("messages.json")
+	check(err)
+	var messages map[string]interface{}
+	err = json.Unmarshal(dat, &messages)
+	check(err)
+
+	message := messages[locale].(map[string]interface{})["thankYou"].(string)
+	message = fmt.Sprintf(message, "http://10.10.0.1")
+	return thankYouMessage{StringToHTML(message)}
+}
+
+type thankYouMessage struct {
+	Message template.HTML
+}
+
+func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	locale := strings.SplitAfterN(r.URL.Path, "/", 2)[1]
+	locale = getLocale(locale)
+
+	//load the json file with questions
+	dat, err := ioutil.ReadFile("questions.json")
+	check(err)
+	var questions map[string]interface{}
+	err = json.Unmarshal(dat, &questions)
+	check(err)
+
+	//create a fields list
+	fields := getFields(questions[locale].([]interface{}), locale)
 
 	// prepare the form
 	userForm := gforms.DefineForm(gforms.NewFields(fields...))
 	form := userForm(r)
 
-	//parse the requestsk
-	if r.Method == "GET" {
-		t.Execute(w, form)
-		return
-	}
-	if !form.IsValid() {
+	//parse the request
+	if r.Method == "GET" || !form.IsValid() {
+		//prepare the template for the form
+		funcMap := template.FuncMap{
+			"stringToHTML": StringToHTML,
+		}
+		t := template.Must(template.New("questionnaire.html").Funcs(funcMap).ParseFiles("questionnaire.html"))
 		t.Execute(w, form)
 		return
 	}
 
+	//if the execution comes to here, it means we can record answers
 	//dump the question answers into a json
 	fmt.Println(form.CleanedData)
 	jsonString, err := json.Marshal(form.CleanedData)
@@ -152,6 +173,10 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	check(err)
 	f.WriteString(string(jsonString))
+
+	//return a thank you view
+	t := template.Must(template.New("thankYou.html").ParseFiles("thankYou.html"))
+	t.Execute(w, getThankYouMessage(locale))
 
 	//TODO: when an answer is recorded send it somewhere for Elpis to access off-camp
 }

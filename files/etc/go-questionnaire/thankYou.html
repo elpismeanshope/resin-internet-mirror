@@ -53,14 +53,7 @@
 
 <body>
     <div>
-    <p> * - required fields </p>
-    <form method="post" class="pure-form-stacked">
-            {{range $i, $field := .Fields}}
-            <label for="{{$field.GetName}}">{{$field.GetName}}: </label>{{$field.Html | stringToHTML}}
-            <br/>
-            {{range $ei, $err := $field.Errors}}<label class="error">{{$err}}</label>{{end}}<br />
-            {{end}}<input type="submit" class="submit-button" value="Submit">
-    </form>
+    <p> {{.Message}} </p>
 </div>
 
 </body>

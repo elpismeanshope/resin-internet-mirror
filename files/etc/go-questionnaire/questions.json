@@ -2,14 +2,14 @@
     "en": [
         {
             "type": "textBoxQuestion",
-            "question": "What is your name?",
+            "question": "What is your name?*",
             "maxLength": 100,
             "name": "name",
             "required": true
         },
         {
             "type": "numberQuestion",
-            "question": "What is your age?",
+            "question": "What is your age?*",
             "name": "age",
             "required": true
         },
@@ -26,7 +26,7 @@
         },
         {
             "type": "singleChoiceQuestion",
-            "question": "What is your gender?",
+            "question": "What is your gender?*",
             "choices": [
                 "Male",
                 "Female"
@@ -38,14 +38,14 @@
     "ar": [
         {
             "type": "textBoxQuestion",
-            "question": "Koks tavo vardas?",
+            "question": "Koks tavo vardas?*",
             "maxLength": 100,
             "name": "name",
             "required": true
         },
         {
             "type": "numberQuestion",
-            "question": "Kiek tau metu?",
+            "question": "Kiek tau metu?*",
             "name": "age",
             "required": true
         },
@@ -62,7 +62,7 @@
         },
         {
             "type": "singleChoiceQuestion",
-            "question": "Kokia tavo lytis?",
+            "question": "Kokia tavo lytis?*",
             "choices": [
                 "Vyras",
                 "Moteris"
