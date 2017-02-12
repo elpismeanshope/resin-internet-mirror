@@ -2,7 +2,20 @@
 FROM resin/amd64-alpine
 
 # Install ZIM (wikipedia etc) packages
-ENV ZIMS    wiktionary_en_simple_all.zim
+# wiktionary_en_simple_all.zim 38M
+# wikibooks_fa_all_2016-12.zim 44M
+# wikibooks_ar_all_2016-12.zim 22M
+#
+# wikipedia_fa_all_2016-11.zim 4.5G
+# wikipedia_ar_all_2016-12.zim 4.9G
+# ==> 9.5G
+
+ENV ZIMS wiktionary_en_simple_all.zim \
+         wikipedia_fa_all.zim \
+         wikipedia_ar_all.zim \
+         wikibooks_fa_all.zim \
+         wikibooks_ar_all.zim
+
 ENV ZIM_URL http://download.kiwix.org/zim
 
 RUN mkdir -p /content/zim /content/kiwix /usr/src/kiwix \
@@ -29,6 +42,10 @@ RUN mkdir -p /content/zim /content/kiwix /usr/src/kiwix \
       ; \
     done
 
+###############################################################################
+#### CAUTION: Changes above this line will cause the rpi's to attempt to   ####
+############# download several GB data.                                    ####
+###############################################################################
 
 # Install httrack
 RUN apk add --update -t build-deps build-base zlib-dev openssl-dev \
@@ -38,8 +55,16 @@ RUN apk add --update -t build-deps build-base zlib-dev openssl-dev \
  && ./configure \
  && make -j8 \
  && make install \
+ && apk add --update hostapd dnsmasq s6 nginx openssh py-pip python \
+      usb-modeswitch \
+ && sed -i 's/#PermitRootLogin.*/PermitRootLogin\ yes/' \
+      /etc/ssh/sshd_config \
+ && pip install ka-lite \
+ && adduser -h /data/kalite kalite -D \
  && apk del build-deps \
- && rm -rf /usr/src/*
+ && rm -rf /root/.cache/ /usr/src/*
+
+# Change above will redownload a few hundred MB
 
 # Mirror Websites
 ENV SITES http://elpissite.weebly.com
@@ -59,20 +84,10 @@ RUN mkdir -p /content/www \
  && cd ../../fonts.googleapis.com \
  && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done 
 
-
-
-RUN apk add --update hostapd dnsmasq s6 nginx openssh py-pip python \
-      usb-modeswitch \
- && sed -i 's/#PermitRootLogin.*/PermitRootLogin\ yes/' \
-      /etc/ssh/sshd_config \
- && pip install ka-lite \
- && adduser -h /data/kalite kalite -D
-
 VOLUME [ "/data" ]
 
 COPY files /
 
 EXPOSE 80 8080 8008
-
 
 ENTRYPOINT [ "/run.sh" ]

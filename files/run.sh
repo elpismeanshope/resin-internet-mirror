@@ -41,7 +41,16 @@ mount -t devpts none /dev/pts
 args=$(lsusb.py \
   | awk '/HUAWEI/ { split($2,a,":"); print "-v " a[1] " -p " a[2]}')
 
-usb_modeswitch $args -J # switch to modem mode
+if [[ -z "${args:-}" ]]; then
+  echo "No modem found, skipping"
+else
+  if ! usb_modeswitch $args -J; then
+    echo "Couldn't switch modem, attempting reboot"
+    curl -X POST --header "Content-Type:application/json" \
+      "$RESIN_SUPERVISOR_ADDRESS/v1/reboot?apikey=$RESIN_SUPERVISOR_API_KEY"
+    exit 1
+  fi
+fi
 
 # Exec s6
 exec s6-svscan /etc/service
