@@ -86,11 +86,13 @@ RUN mkdir -p /content/www \
  && cd ../cdn2.editmysite.com/js/site
  && for f in *.js; do sed -i 's/http:\/\/elpissite.weebly.com/..\/elpissite.weebly.com/' $f; done
 
-# Run the questionnaire and copy the index file to /www/
-ENV GOPATH files/etc/go-questionnaire
+# Run the questionnaire and copy the landing index file to /www/
+ENV GOPATH /content/www/
 RUN cp files/etc/landing-page/index.html /content/www \
+ && cd /content/www \
+ && git clone https://github.com/elpismeanshope/go-questionnaire.git \
  && go get github.com/bluele/gforms \
- && cd file/etc/go-questionnaire \
+ && cd go-questionnaire \
  && go run questionnaire.go
 
 VOLUME [ "/data" ]
