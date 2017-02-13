@@ -1,5 +1,5 @@
 FROM resin/%%RESIN_MACHINE_NAME%%-alpine
-FROM resin/%%RESIN_MACHINE_NAME%%-golang:latest
+FROM resin/%%RESIN_MACHINE_NAME%%-alpine-golang:latest
 
 # Install ZIM (wikipedia etc) packages
 # wiktionary_en_simple_all.zim 38M
