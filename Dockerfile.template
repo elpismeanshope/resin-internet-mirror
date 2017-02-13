@@ -1,4 +1,5 @@
 FROM resin/%%RESIN_MACHINE_NAME%%-alpine
+FROM resin/%%RESIN_MACHINE_NAME%%-golang:latest
 
 # Install ZIM (wikipedia etc) packages
 # wiktionary_en_simple_all.zim 38M
@@ -70,6 +71,7 @@ ENV SITES http://elpissite.weebly.com
 RUN mkdir -p /content/www \
  && cd /content/www \
  && httrack --ext-depth=1 $SITES \
+ && httrack https://fa.m.wikibooks.org/wiki/%D8%B5%D9%81%D8%AD%D9%87%D9%94_%D8%A7%D8%B5%D9%84%DB%8C \
  && find . -type f -maxdepth 1 -delete \
  && rm -rf hts-cache \
  && cd /content/www/elpissite.weebly.com \
@@ -85,6 +87,12 @@ RUN mkdir -p /content/www \
  && cd ../cdn2.editmysite.com/js/site
  && for f in *.js; do sed -i 's/http:\/\/elpissite.weebly.com/..\/elpissite.weebly.com/' $f; done
 
+# Run the questionnaire and copy the index file to /www/
+ENV GOPATH files/etc/go-questionnaire
+RUN cp files/etc/landing-page/index.html /content/www \
+ && go get github.com/bluele/gforms \
+ && cd file/etc/go-questionnaire \
+ && go run questionnaire.go
 
 VOLUME [ "/data" ]
 

@@ -183,5 +183,5 @@ func questionnaireHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", questionnaireHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8", nil)
 }
