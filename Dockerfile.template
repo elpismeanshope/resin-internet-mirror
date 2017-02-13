@@ -71,7 +71,6 @@ ENV SITES http://elpissite.weebly.com
 RUN mkdir -p /content/www \
  && cd /content/www \
  && httrack --ext-depth=1 $SITES \
- && httrack https://fa.m.wikibooks.org/wiki/%D8%B5%D9%81%D8%AD%D9%87%D9%94_%D8%A7%D8%B5%D9%84%DB%8C \
  && find . -type f -maxdepth 1 -delete \
  && rm -rf hts-cache \
  && cd /content/www/elpissite.weebly.com \
@@ -98,6 +97,6 @@ VOLUME [ "/data" ]
 
 COPY files /
 
-EXPOSE 80 8080 8008
+EXPOSE 80 8080 8008 8
 
 ENTRYPOINT [ "/run.sh" ]
