@@ -78,6 +78,6 @@ VOLUME [ "/data" ]
 
 COPY files /
 
-EXPOSE 80 8080 8008
+EXPOSE 80 8080 8008 8081
 
 ENTRYPOINT [ "/run.sh" ]
