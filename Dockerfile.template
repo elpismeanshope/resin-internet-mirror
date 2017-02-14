@@ -70,7 +70,6 @@ RUN apk add -t build-deps --update go git libc-dev \
  && mkdir /opt/questionnaire \
  && mv $GOPATH/bin/go-questionnaire /usr/bin/ \
  && mv $GOPATH/src/github.com/elpismeanshope/go-questionnaire/*.html /opt/questionnaire/ \
- && rm -rf /opt/go \
  && apk del build-deps \
  && adduser -h /opt/questionnaire elpis -D
 
