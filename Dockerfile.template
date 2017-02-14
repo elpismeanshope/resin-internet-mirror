@@ -62,6 +62,24 @@ RUN mkdir -p /content/www \
  && cd ../../fonts.googleapis.com \
  && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done 
 
+#Mirror the arabic site
+ENV SITES http://elpissite2.weebly.com
+RUN cd /content/www \
+ && httrack --near --disable-security-limits --max-rate 0 \
+      --connection-per-second 100 $SITES \
+ && find . -type f -maxdepth 1 -delete \
+ && rm -rf hts-cache \
+ && cd /content/www/elpissite2.weebly.com \
+ && for f in *.html; do sed -i 's/class=\"footer-wrap\".*/class=\"footer-wrap\" style=\"display:none;\" \/>/' $f; done \
+ && for f in *.html; do sed -i 's/class=\"wsite-section-elements\".*/class=\"footer-wrap\" style=\"visibility:visible;\" \/>/' $f; done \
+ && for f in *.html; do sed -i 's/scpt.parentNode.insertBefore(elem, scpt);//' $f; done \
+ && for f in *.html; do sed -i 's/s.parentNode.insertBefore(ga, s);//' $f; done \
+ && cd files \
+ && for f in *.css; do sed -i 's/@import url(\x27http:\/\/fast.fonts.net\/t\/1.css?apiType=css&amp;projectid=b9a63dc3-765c-484e-bafe-ef372307f1b7?1485949767\x27);//' $f; done \
+ && for f in *.css; do sed -i 's/http:\/\/elpissite2.weebly.com\/files\/theme\/fonts/..\/elpissite2.weebly.com\/files\/theme\/fonts/' $f; done \
+ && cd ../../fonts.googleapis.com \
+ && for f in *.css; do sed -i 's/http:\/\/fonts.gstatic.com/..\/fonts.gstatic.com/' $f; done 
+
 # Go-Questionaire
 RUN apk add -t build-deps --update go git libc-dev \
  && export GOPATH=/opt/go \
@@ -70,6 +88,7 @@ RUN apk add -t build-deps --update go git libc-dev \
  && mkdir /opt/questionnaire \
  && mv $GOPATH/bin/go-questionnaire /usr/bin/ \
  && mv $GOPATH/src/github.com/elpismeanshope/go-questionnaire/*.html /opt/questionnaire/ \
+ && mv $GOPATH/src/github.com/elpismeanshope/go-questionnaire/*.json /opt/questionnaire/ \
  && rm -rf /opt/go \
  && apk del build-deps \
  && adduser -h /opt/questionnaire elpis -D
@@ -78,6 +97,6 @@ VOLUME [ "/data" ]
 
 COPY files /
 
-EXPOSE 80 8080 8008
+EXPOSE 80 8080 8008 8081
 
 ENTRYPOINT [ "/run.sh" ]
